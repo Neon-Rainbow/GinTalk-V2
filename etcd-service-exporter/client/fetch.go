@@ -24,12 +24,16 @@ type Service struct {
 
 func (s *Service) toPrometheusTarget() *PrometheusTarget {
 	return &PrometheusTarget{
-		Targets: []string{fmt.Sprintf("%v:%v", s.Host, s.Port)},
+		Targets: []string{s.address()},
 		Labels: map[string]string{
 			"job": s.Name,
 			"id":  s.ID,
 		},
 	}
+}
+
+func (s *Service) address() string {
+	return fmt.Sprintf("%v:%v", s.Host, s.Port)
 }
 
 // fetchServicesFromEtcd 用于从 etcd 中获取服务信息
@@ -50,9 +54,20 @@ func fetchServicesFromEtcd(ctx context.Context, prefix string) ([]*PrometheusTar
 			zap.L().Error("解析服务信息失败", zap.Error(err))
 			return nil, err
 		}
-		targets = append(targets, s.toPrometheusTarget())
+		targets = update(s, targets)
 	}
 	return targets, nil
+}
+
+// update 用于更新 PrometheusTarget
+func update(service *Service, targets []*PrometheusTarget) []*PrometheusTarget {
+	for _, target := range targets {
+		if target.Labels["job"] == service.Name && target.Labels["id"] == service.ID {
+			target.Targets = append(target.Targets, service.address())
+			return targets
+		}
+	}
+	return append(targets, service.toPrometheusTarget())
 }
 
 // generatePrometheusFileSd 生成Prometheus file_sd_configs使用的目标文件 (generate the target file for Prometheus file_sd_configs)
