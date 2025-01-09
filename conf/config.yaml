@@ -15,7 +15,7 @@ mysql:
     slowThreshold: 500 # 慢查询阈值，单位毫秒
     ignoreRecordNotFoundError: true # 忽略记录未找到错误
     colorful: true     # 是否彩色输出
-    parameterizedQueries: false # 是否参数化查询
+    parameterizedQueries: true # 是否参数化查询
 
 redis:
   host: 127.0.0.1
