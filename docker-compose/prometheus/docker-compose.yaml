@@ -1,0 +1,10 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./file_sd_targets.json:/etc/prometheus/targets.json
+    restart: unless-stopped

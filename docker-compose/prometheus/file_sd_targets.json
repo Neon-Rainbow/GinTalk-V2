@@ -1,0 +1,11 @@
+[
+  {
+    "targets": [
+      "host.docker.internal:8080"
+    ],
+    "labels": {
+      "id": "gin-talk",
+      "job": "gin-talk"
+    }
+  }
+]
